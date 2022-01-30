@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wakelock/wakelock.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(MyApp());
@@ -50,6 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final Controller c = Get.put(Controller());
 
+    int countingCell = 5;
+
     return Scaffold(
       drawer: Drawer(
          child: ListView(
@@ -75,33 +78,43 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("Cell counter"),
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTapDown: (_) => c.increment(),
-        child: Stack(
-        children: [
-           Column(
-             children: [
-               Expanded(
-                   child: Container(
-                     color: Colors.blue,
-                   ),
-                 ),
-             ],
-           ),
-           Center(
-            child: Obx(() => Text(c.count.toString(), style: Theme.of(context).primaryTextTheme.headline1,) )
-
-           )
-        ],
-      ))
-        ,
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: List.generate((countingCell / 2).round(), (index) => index).map((e) =>
+          Row(
+            children: List.generate((countingCell / 2).round(), (index) => index).map((e) =>
+              clickable(c)
+            ).toList(),
+          )
+        ).toList(),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => c.zero(),
         tooltip: 'Increment',
         backgroundColor: Colors.red,
         child: Icon(Icons.delete),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget clickable(Controller c) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTapDown: (_) => c.increment(),
+            child: Stack(
+              children: [
+                Container(
+                  color: Colors.blue
+                ),
+                Center(
+                    child: Obx(() => Text(c.count.toString(), style: Theme.of(context).primaryTextTheme.bodyText1.copyWith(color: Colors.black)) )
+                )
+              ],
+            )),
+      ),
     );
   }
 }
